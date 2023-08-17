@@ -73,7 +73,7 @@ class App
                                     'image' => new Image($discord, [
                                         'url' => $this->config()['host'] . '/images/' . $birthday['image']
                                     ]),
-                                    'description' => "Сегодня день рождения у нашей любимой <@!$id>!\nДавайте поздравим нашу кемошку и пожелаем ей всего самого лучшего.",
+                                    'description' => "Сегодня день рождения у нашей любимой <@!$id>!\nДавайте поздравим нашу кемошку и пожелаем ей всего самого лучшего.\n@everyone",
                                     'fields' => [
                                         new Field($discord, [
                                             'name' => 'Кемошка',
