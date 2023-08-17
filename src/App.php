@@ -27,6 +27,25 @@ class App
         return $this->config;
     }
 
+    protected function filterGuilds(Discord $discord): array
+    {
+        $result = [];
+
+        foreach (
+            $discord->guilds->filter(fn ($guild) => in_array($guild->name, array_keys($this->config()['guilds'])))
+            as $guild
+        ) {
+            $result[] = [
+                'guild' => $guild,
+                'channels' => $guild
+                    ->channels
+                    ->filter(fn ($channel) => in_array($channel->name, $this->config()['guilds'][$guild->name]))
+            ];
+        }
+
+        return $result;
+    }
+
     public function run()
     {
         Carbon::setLocale('ru-RU');
@@ -38,14 +57,12 @@ class App
         ]);
 
         $discord->on('ready', function (Discord $discord) {
-            foreach ($discord->guilds as $guild) {
-                echo $guild->name . "\n";
+            $filteredGuilds = $this->filterGuilds($discord);
 
-                foreach ($guild->channels as $channel) {
-                    if ($channel->type != Channel::TYPE_TEXT || $channel->name != $this->config()['channel'])
-                        continue;
+            foreach ($filteredGuilds as $group) {
+                $guild = $group['guild'];
 
-
+                foreach ($group['channels'] as $channel) {
                     foreach ($this->config()['birthdays'] as $id => $birthday) {
                         $member = $guild->members->filter(fn($member) => $member->user->id == $id)->first();
 
@@ -93,13 +110,12 @@ class App
         ]);
 
         $discord->on('ready', function (Discord $discord) {
-            foreach ($discord->guilds as $guild) {
-                echo $guild->name . "\n";
+            $filteredGuilds = $this->filterGuilds($discord);
 
-                foreach ($guild->channels as $channel) {
-                    if ($channel->type != Channel::TYPE_TEXT || $channel->name != $this->config()['channel'])
-                        continue;
+            foreach ($filteredGuilds as $group) {
+                $guild = $group['guild'];
 
+                foreach ($group['channels'] as $channel) {
                     foreach ($this->config()['birthdays'] as $id => $birthday) {
                         if (!($diff = (new Carbon($birthday['date']))->diff()) || $diff->m != 0 || $diff->d > 0)
                             continue;
