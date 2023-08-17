@@ -1,0 +1,19 @@
+{
+    "name": "kotik/kemono-birthday",
+    "description": "Bot for notify users about birthdays with cutie Kemono Friends!",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Kotik\\KemonoBirthday\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "BashkirskyKot"
+        }
+    ],
+    "require": {
+        "team-reflex/discord-php": "^7.3",
+        "nesbot/carbon": "^2.69"
+    }
+}
