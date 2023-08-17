@@ -129,7 +129,7 @@ class App
                                 ->addEmbed(new Embed($discord, [
                                     'title' => 'День рождения!',
                                     'image' => new Image($discord, [
-                                        'url' => 'https://kemono.vrkitty.ru/images/' . $birthday['image']
+                                        'url' => $this->config()['host'] . '/images/' . $birthday['image']
                                     ]),
                                     'description' => "Сегодня день рождения у нашей любимой <@!$id>!\nДавайте поздравим нашу кемошку и пожелаем ей всего самого лучшего.",
                                     'fields' => [

@@ -10,6 +10,7 @@ Make config file:
 
 return [
     'token'  => 'DISCORD_BOT_TOKEN',
+    'host'   => 'BASE_HOST',
     'guilds' => [
         'SERVER_NAME' => [
             'CHANNEL_NAME'
