@@ -5,11 +5,12 @@ namespace Kotik\KemonoBirthday;
 use Carbon\Carbon;
 use Discord\Builders\MessageBuilder;
 use Discord\Discord;
-use Discord\Parts\Channel\Channel;
 use Discord\Parts\Embed\Embed;
 use Discord\Parts\Embed\Field;
 use Discord\Parts\Embed\Image;
+use Discord\Parts\User\Member;
 use Discord\WebSockets\Intents;
+use Kotik\KemonoBirthday\Objects\Birthday;
 
 class App
 {
@@ -46,6 +47,35 @@ class App
         return $result;
     }
 
+    protected function makeMessage(Discord $discord, Birthday $birthday, Member $member): MessageBuilder
+    {
+        return MessageBuilder::new()
+            ->addEmbed(new Embed($discord, [
+                'title' => 'День рождения!',
+                'image' => new Image($discord, [
+                    'url' => $this->config()['host'] . '/images/' . $birthday->image
+                ]),
+                'description' => "Сегодня день рождения у нашей любимой <@!$birthday->id>!\nДавайте поздравим нашу кемошку и пожелаем ей всего самого лучшего.\n@everyone",
+                'fields' => [
+                    new Field($discord, [
+                        'name' => 'Кемошка',
+                        'value' => $birthday->kemono->name(),
+                        'inline' => true
+                    ]),
+                    new Field($discord, [
+                        'name' => 'Возраст',
+                        'value' => (new Carbon($birthday->date))->longAbsoluteDiffForHumans(),
+                        'inline' => true
+                    ]),
+                    new Field($discord, [
+                        'name' => 'С нами',
+                        'value' => (new Carbon($member->joined_at))->longAbsoluteDiffForHumans(2),
+                        'inline' => true
+                    ]),
+                ]
+            ]));
+    }
+
     public function run()
     {
         Carbon::setLocale('ru-RU');
@@ -66,33 +96,13 @@ class App
                     foreach ($this->config()['birthdays'] as $id => $birthday) {
                         $member = $guild->members->filter(fn($member) => $member->user->id == $id)->first();
 
+                        $birthday = new Birthday($id, $birthday);
+
                         $channel->sendMessage(
-                            MessageBuilder::new()
-                                ->addEmbed(new Embed($discord, [
-                                    'title' => 'День рождения!',
-                                    'image' => new Image($discord, [
-                                        'url' => $this->config()['host'] . '/images/' . $birthday['image']
-                                    ]),
-                                    'description' => "Сегодня день рождения у нашей любимой <@!$id>!\nДавайте поздравим нашу кемошку и пожелаем ей всего самого лучшего.\n@everyone",
-                                    'fields' => [
-                                        new Field($discord, [
-                                            'name' => 'Кемошка',
-                                            'value' => $birthday['kemono']->name(),
-                                            'inline' => true
-                                        ]),
-                                        new Field($discord, [
-                                            'name' => 'Возраст',
-                                            'value' => (new Carbon($birthday['date']))->longAbsoluteDiffForHumans(),
-                                            'inline' => true
-                                        ]),
-                                        new Field($discord, [
-                                            'name' => 'С нами',
-                                            'value' => (new Carbon($member->joined_at))->longAbsoluteDiffForHumans(2),
-                                            'inline' => true
-                                        ]),
-                                    ]
-                                ]))
+                            $this->makeMessage($discord, $birthday, $member)
                         );
+
+                        break;
                     }
                 }
             }
@@ -117,7 +127,9 @@ class App
 
                 foreach ($group['channels'] as $channel) {
                     foreach ($this->config()['birthdays'] as $id => $birthday) {
-                        if (!($diff = (new Carbon($birthday['date']))->diff()) || $diff->m != 0 || $diff->d > 0)
+                        $birthday = new Birthday($id, $birthday);
+
+                        if (!($diff = (new Carbon($birthday->date))->diff()) || $diff->m != 0 || $diff->d > 0)
                             continue;
 
                         $member = $guild->members->filter(fn($member) => $member->user->id == $id)->first();
@@ -125,31 +137,7 @@ class App
                         $this->messagesOrdered++;
 
                         $channel->sendMessage(
-                            MessageBuilder::new()
-                                ->addEmbed(new Embed($discord, [
-                                    'title' => 'День рождения!',
-                                    'image' => new Image($discord, [
-                                        'url' => $this->config()['host'] . '/images/' . $birthday['image']
-                                    ]),
-                                    'description' => "Сегодня день рождения у нашей любимой <@!$id>!\nДавайте поздравим нашу кемошку и пожелаем ей всего самого лучшего.",
-                                    'fields' => [
-                                        new Field($discord, [
-                                            'name' => 'Кемошка',
-                                            'value' => $birthday['kemono']->name(),
-                                            'inline' => true
-                                        ]),
-                                        new Field($discord, [
-                                            'name' => 'Возраст',
-                                            'value' => (new Carbon($birthday['date']))->longAbsoluteDiffForHumans(),
-                                            'inline' => true
-                                        ]),
-                                        new Field($discord, [
-                                            'name' => 'С нами',
-                                            'value' => (new Carbon($member->joined_at))->longAbsoluteDiffForHumans(),
-                                            'inline' => true
-                                        ]),
-                                    ]
-                                ]))
+                            $this->makeMessage($discord, $birthday, $member)
                         )->done(function () use ($discord) {
                             $this->messagesSent++;
                             $this->checkSent($discord);
