@@ -101,8 +101,6 @@ class App
                         $channel->sendMessage(
                             $this->makeMessage($discord, $birthday, $member)
                         );
-
-                        break;
                     }
                 }
             }
