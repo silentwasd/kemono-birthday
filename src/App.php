@@ -155,18 +155,6 @@ class App
             $discord->close();
     }
 
-    public function test(): void
-    {
-        foreach ($this->config()['birthdays'] as $id => $birthday) {
-            $birthday = new Birthday($id, $birthday);
-
-            if (!($diff = (new Carbon($birthday->date))->diff()) || $diff->m != 0 || $diff->d > 0)
-                continue;
-
-            echo $birthday->name . "\n";
-        }
-    }
-
     public function console(): void
     {
         $this->commands = $this->findCommands();
