@@ -17,17 +17,17 @@ enum Kemono
 
     public function name(): string
     {
-        return match($this) {
-            self::Unknown => 'Незнакомка',
-            self::Shoebill => 'Китоглав',
-            self::NothernOwl => 'Северная белолицая сова',
-            self::SilverFox => 'Черно-бурая лиса',
-            self::Tsuchinoko => 'Цутиноко',
-            self::Kitakitsune => 'Рыжая лиса',
+        return match ($this) {
+            self::Unknown          => 'Незнакомка',
+            self::Shoebill         => 'Китоглав',
+            self::NothernOwl       => 'Северная белолицая сова',
+            self::SilverFox        => 'Черно-бурая лиса',
+            self::Tsuchinoko       => 'Цутиноко',
+            self::Kitakitsune      => 'Рыжая лиса',
             self::SmallClawedOtter => 'Выдра',
-            self::IslandFox => 'Островная лиса',
-            self::AraiSan => 'Енот',
-            self::AmurTiger => 'Амурский тигр'
+            self::IslandFox        => 'Островная лиса',
+            self::AraiSan          => 'Енот',
+            self::AmurTiger        => 'Амурский тигр'
         };
     }
 }
