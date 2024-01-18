@@ -14,7 +14,7 @@ class HelpCommand extends BaseCommand
 
         foreach ($this->app->commands as $name => $class) {
             $command = new $class($this->app);
-            echo "$name\t\t\t" . $command->description . "\n";
+            echo "$name - " . $command->description . "\n";
         }
     }
 }
